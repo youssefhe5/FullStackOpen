@@ -1,0 +1,8 @@
+sqeuenceDiagram
+	participant browser
+	participant client
+
+	browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+	activate server
+	server-->>browser: internally save input and update list with js
+	deactivate server
