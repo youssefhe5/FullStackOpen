@@ -1,5 +1,45 @@
 import { useState } from 'react';
 
+const Button = (props) => {
+  return (
+    <div>
+      <button onClick={props.onClick}>{props.name}</button>
+    </div>
+  )
+}
+
+const Anecdote = (props) => {
+  return (
+    <div>
+      <h1>Anecdote of the day</h1>
+      <p>{props.anecdote}</p>
+      <p>has {props.votes} votes</p>
+    </div>
+  )
+}
+
+const TopAnecdote = (props) => {
+
+    let max = props.votes[0]
+    let maxIndex = 0
+
+    for (let i = 1; i < props.votes.length; i++){
+      if (props.votes[i] > max){
+        maxIndex = i
+        max = props.votes[i]
+      }
+    }
+
+
+  return (
+    <div>
+      <h1>Anecdote with most votes</h1>
+      <p>{props.anecdotes[maxIndex]}</p>
+      <p>Has {max} votes</p>
+    </div>
+  )
+}
+
 const App = () => {
   const anecdotes = [
     'If it hurts, do it more often.',
@@ -13,13 +53,27 @@ const App = () => {
   ]
 
   const [selected, setSelected] = useState(0)
+  const [votes, setVotes] = useState([0,0,0,0,0,0,0,0]);
+
+  
+  const copy = [...votes]
+
+  const nextAnecdote = () => {
+    setSelected(Math.floor(Math.random() * 8))
+  }
+  
+  const castVote = () => {
+    copy[selected] += 1
+    setVotes(copy)
+  }
 
   return (
     <div>
-      {anecdotes[selected]}
-      <div>
-        <button onClick={() => setSelected(Math.floor(Math.random() * 8))}>next anecdote</button>
-      </div>
+      <Anecdote anecdote={anecdotes[selected]} votes={votes[selected]} />
+      <Button onClick={castVote} name="vote" />
+      <Button onClick={nextAnecdote} name="next anecdote" />
+      <TopAnecdote anecdotes={anecdotes} votes={copy} />
+
     </div>
   )
 }
