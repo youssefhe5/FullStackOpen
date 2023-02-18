@@ -28,10 +28,18 @@ const PersonForm = (props) => {
   );
 };
 
-const Persons = ({ filteredArray }) => {
+const Persons = ({ filteredArray, removeName }) => {
   return filteredArray.map((person) => (
     <p key={person.id}>
-      {person.name} {person.number}
+      {person.name} {person.number}{" "}
+      <button
+        onClick={() => {
+          console.log(person);
+          removeName(person);
+        }}
+      >
+        delete
+      </button>
     </p>
   ));
 };
@@ -63,6 +71,20 @@ const App = () => {
         setNewName("");
         setNewNumber("");
       });
+    }
+  };
+
+  const removeName = (clickedPerson) => {
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${clickedPerson.name} from your phonebook?`
+      )
+    ) {
+      console.log(clickedPerson, " removed");
+      personsService.remove(clickedPerson.id);
+      setPersons(persons.filter((person) => clickedPerson.id !== person.id));
+    } else {
+      console.log(clickedPerson, " was not removed");
     }
   };
 
@@ -98,7 +120,7 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons filteredArray={filteredArray} />
+      <Persons filteredArray={filteredArray} removeName={removeName} />
     </div>
   );
 };
