@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import personsService from "./services/persons";
+import Notification from "./components/Notification.js";
+import ErrorNotifiction from "./components/ErrorNotification.js";
 
 const Filter = (props) => {
   return (
@@ -49,6 +51,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [successMessage, setSuccessMessage] = useState();
+  const [errorMessage, setErrorMessage] = useState();
 
   useEffect(() => {
     personsService.getAll().then((persons) => setPersons(persons));
@@ -69,14 +73,28 @@ const App = () => {
             `${newName} is already added to phonebook, replace the old number with a new one?`
           )
         ) {
-          personsService.update(person.id, personObject).then((newPerson) => {
-            console.log(newPerson);
-            setPersons(
-              persons.filter((p) => p.id !== person.id).concat(newPerson)
-            );
-            setNewName("");
-            setNewNumber("");
-          });
+          personsService
+            .update(person.id, personObject)
+            .then((newPerson) => {
+              console.log(newPerson);
+              setPersons(
+                persons.filter((p) => p.id !== person.id).concat(newPerson)
+              );
+              setNewName("");
+              setNewNumber("");
+              setSuccessMessage(`Updated ${person.name}s number`);
+              setTimeout(() => {
+                setSuccessMessage(null);
+              }, 3000);
+            })
+            .catch((error) => {
+              setErrorMessage(
+                `Information of ${person.name} has already been removed from server`
+              );
+              setTimeout(() => {
+                setErrorMessage(null);
+              }, 6000);
+            });
           console.log("update phonebook");
         }
       }
@@ -89,6 +107,10 @@ const App = () => {
         setPersons(persons.concat(newPerson));
         setNewName("");
         setNewNumber("");
+        setSuccessMessage(`Added ${newPerson.name} to the phonebook`);
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 3000);
       });
     }
   };
@@ -126,6 +148,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={successMessage} />
+      <ErrorNotifiction message={errorMessage} />
 
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
 
